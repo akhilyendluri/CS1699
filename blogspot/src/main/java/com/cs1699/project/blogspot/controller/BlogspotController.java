@@ -1,29 +1,15 @@
 package com.cs1699.project.blogspot.controller;
 
-import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cs1699.project.blogspot.config.ConsumerConfiguration;
 import com.cs1699.project.blogspot.config.ConsumerService;
-//import com.cs1699.project.blogspot.config.ConsumerService;
 import com.cs1699.project.blogspot.config.ProducerService;
 import com.cs1699.project.blogspot.datasource.Blog;
 
@@ -35,16 +21,8 @@ public class BlogspotController {
 	@Autowired
 	public ProducerService producer;
 	
-	ConsumerConfiguration consumer = new ConsumerConfiguration();
-	
-	@Autowired
-	private Map<String, Object> consumerConfig; /*= consumer.consumerConfigs();*/
-	
 	@Autowired
 	private ConsumerService consumerservice;
-	
-//	@Autowired
-//	public ConsumerService consumer;
 	
 	private void printBlogData(Blog blog) {
 		
@@ -56,31 +34,6 @@ public class BlogspotController {
 	
 	@RequestMapping(value="/consume")
 	public List<Blog> consumerPosts() {
-//		try {
-//			consumer.getLatch().await(10000, TimeUnit.MILLISECONDS);
-//			return consumer.getBlogs();
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		final Long pollInterval = (long) 1000;
-//        List<Blog> outputMessages = new ArrayList<>();
-//        
-//        System.out.println("bootstrap.servers == " + consumerConfig.get("bootstrap.servers"));
-//        
-//        
-//        @SuppressWarnings("unchecked")
-//		KafkaConsumer<String, Blog> consumer = new KafkaConsumer<>(
-//        		(Map<String, Object>) consumerConfig);
-//        
-//        TopicPartition tp = new TopicPartition(KAFKATOPIC, 0);
-//        consumer.assign(Arrays.asList(tp));
-//        consumer.seek(tp, 1);
-//        
-//        ConsumerRecords<String, Blog> records = consumer.poll(pollInterval);
-//        for( ConsumerRecord<String, Blog> record : records ) {
-//        	outputMessages.add(record.value());
-//        }
 		return consumerservice.getBlogs();
 	}
 	
@@ -95,9 +48,6 @@ public class BlogspotController {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
 		newBlog.setPostDate(dateFormat.format(date));
-//		if(template == null) {
-//			System.out.println("template is null");
-//		}
 		producer.publishEvent(KAFKATOPIC, newBlog);
 		
 		return ResponseEntity.ok().build();
